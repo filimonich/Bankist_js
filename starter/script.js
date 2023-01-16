@@ -83,7 +83,7 @@ const displayMovements = function (movements) {
       <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-      <div class="movements__value">${mov}</div>
+      <div class="movements__value">${mov}€</div>
     </div>`;
     // insertAdjacentHTML() разбирает указанный текст как HTML или XML и вставляет полученные узлы (nodes) в DOM дерево в указанную позицию. Данная функция не переписывает имеющиеся элементы, что предотвращает дополнительную сериализацию и поэтому работает быстрее, чем манипуляции с innerHTML.
     containerMovements.insertAdjacentHTML(`afterbegin`, html);
@@ -91,6 +91,15 @@ const displayMovements = function (movements) {
   // создание html
 };
 displayMovements(account1.movements); // вызов функции
+
+///////////////////////////////////////////////////////////////////////
+// 153 The reduce Method  //
+
+const calcDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance}€`;
+};
+calcDisplayBalance(account1.movements);
 
 /////////////////////////////////////////////////////////////////
 // 151 Computing Usernames // Вычисление имен пользователей
