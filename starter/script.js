@@ -71,7 +71,6 @@ const displayMovements = function (movements) {
   // опорожнить весь контейнер и только потом добовляем новые элементы
   // Возвращает всё включая HTML, все тэги
   // containerMovements.innerHTML = ``; // устанавливаем его в пустую строку
-
   // функция получает один массив движения, затем работает с этими данными
   movements.forEach(function (mov, i) {
     // функция (mov, i) обратного вызова
@@ -87,10 +86,9 @@ const displayMovements = function (movements) {
     </div>`;
     // insertAdjacentHTML() разбирает указанный текст как HTML или XML и вставляет полученные узлы (nodes) в DOM дерево в указанную позицию. Данная функция не переписывает имеющиеся элементы, что предотвращает дополнительную сериализацию и поэтому работает быстрее, чем манипуляции с innerHTML.
     containerMovements.insertAdjacentHTML(`afterbegin`, html);
+    // создание html
   });
-  // создание html
 };
-displayMovements(account1.movements); // вызов функции
 
 ///////////////////////////////////////////////////////////////////////
 // 153 The reduce Method  //
@@ -99,33 +97,31 @@ const calcDisplayBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `${balance}€`;
 };
-calcDisplayBalance(account1.movements);
 
 ///////////////////////////////////////////////
 //  155 The Magic of Chaining Methods // Магия методов объединения в цепочки
 
-const calcDisplaySummary = function (movements) {
-  const incomes = movements
+const calcDisplaySummary = function (acc) {
+  const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${incomes}€`;
 
-  const out = movements
+  const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(out)}€`; // Метод Math.abs() возвращает абсолютное значение числа, убрал минус в начале числа
 
   //сумма начисленных процентов, за пополнение счета
-  const interest = movements
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * 1.2) / 100)
+    .map(deposit => (deposit * acc.interestRate) / 100)
     .filter((int, i, arr) => {
       return int >= 1; // процент выплачивают, при условии что сумма процентов больше 1 в любой валюте
     })
     .reduce((acc, int) => acc + int, 0);
   labelSumInterest.textContent = `${interest}€`;
 };
-calcDisplaySummary(account1.movements);
 
 /////////////////////////////////////////////////////////////////
 // 151 Computing Usernames // Вычисление имен пользователей
@@ -140,3 +136,40 @@ const createUsernames = function (accs) {
   }); // здесь не нужен return, зпдача вызвать побочный эффект, мы не создаем новое значение для возврата
 };
 createUsernames(accounts);
+
+////////////////////////////////////////////////////////////////////
+// 158 Implementing Login
+
+// Event handler // Обработчик событий
+let currentAccount; // Переменная определена снаружи, потому что понадобится информация о тек. счете для других функц.
+
+btnLogin.addEventListener(`click`, function (e) {
+  e.preventDefault(); // Прервет форму отправки
+
+  // В массиве accounts находим параметр равное введеному значению
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+  // Проверка, пин currentAccount на соотвествие введенному пину из inputLoginUsername
+  // ?. проверяет, существует ли currentAccount, далее pin будет прочитан, только если он существует
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Отобразить пользовательский интерфейс и приветсвие
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(` `)[0]
+    }`;
+    containerApp.style.opacity = 100;
+
+    // Очистка поля ввода
+    // Оператор присваивания, присвоит  ""(пустая строка) значение для строк, опер. работает справа налево
+    inputLoginUsername.value = inputLoginPin.value = ``; // .value что бы брать только содержимое поля ввода
+    inputLoginPin.blur(); // Поле теряет фокус, исчезает курсор
+
+    // Отобразить движение
+    displayMovements(currentAccount.movements);
+    // Отобразить баланс
+    calcDisplayBalance(currentAccount.movements);
+    // отобразить итоги
+    calcDisplaySummary(currentAccount);
+  }
+});
