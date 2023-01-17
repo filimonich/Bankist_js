@@ -208,6 +208,22 @@ btnTransfer.addEventListener(`click`, function (e) {
   }
 });
 
+////////////////////////////////////////////////////////////
+// 161 some and every // некоторые и каждый
+// Правило, выдается кредит, только если есть хоть 1 положительный перевод(mov) с суммой не меньше 10% от запрашиваемой суммы кредита
+
+btnLoan.addEventListener(`click`, function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    // Если это верно, добавить положительные movement к балансу и обновить интерфейс
+    currentAccount.movements.push(amount);
+    updateUi(currentAccount);
+  }
+  inputLoanAmount.value = ``;
+});
+
 ////////////////////////////////////////////////////////////////////
 // 160 The findIndex Method
 
