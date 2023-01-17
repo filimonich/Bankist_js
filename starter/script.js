@@ -207,3 +207,27 @@ btnTransfer.addEventListener(`click`, function (e) {
     console.log(`ERROR`);
   }
 });
+
+////////////////////////////////////////////////////////////////////
+// 160 The findIndex Method
+
+// Метод findIndex() возвращает индекс в массиве, если элемент удовлетворяет условию проверяющей функции. В противном случае возвращается -1.
+btnClose.addEventListener(`click`, function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    console.log(index);
+
+    // Удаляем акаунт
+    accounts.splice(index, 1);
+    // Скрыть интерфейс
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = ``; // Удаление символов ставится после условий, иначе условия могут не выполниться
+});
