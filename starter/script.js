@@ -93,9 +93,9 @@ const displayMovements = function (movements) {
 ///////////////////////////////////////////////////////////////////////
 // 153 The reduce Method  //
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance}€`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
 };
 
 ///////////////////////////////////////////////
@@ -137,6 +137,15 @@ const createUsernames = function (accs) {
 };
 createUsernames(accounts);
 
+const updateUi = function (acc) {
+  // Отобразить движение
+  displayMovements(acc.movements);
+  // Отобразить баланс
+  calcDisplayBalance(acc);
+  // отобразить итоги
+  calcDisplaySummary(acc);
+};
+
 ////////////////////////////////////////////////////////////////////
 // 158 Implementing Login
 
@@ -165,11 +174,36 @@ btnLogin.addEventListener(`click`, function (e) {
     inputLoginUsername.value = inputLoginPin.value = ``; // .value что бы брать только содержимое поля ввода
     inputLoginPin.blur(); // Поле теряет фокус, исчезает курсор
 
-    // Отобразить движение
-    displayMovements(currentAccount.movements);
-    // Отобразить баланс
-    calcDisplayBalance(currentAccount.movements);
-    // отобразить итоги
-    calcDisplaySummary(currentAccount);
+    // Обновление ПИ(UI(пользовательского интерфейса))
+    updateUi(currentAccount);
+  }
+});
+
+////////////////////////////////////////////////////////////////////
+// 159 Implementing Transfers // Осуществление трансфертов
+
+btnTransfer.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  // Получаем число amount
+  const amount = Number(inputTransferAmount.value);
+  // Находим и проверяем полученные данные из inputTransferTo.value
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+  // console.log(amount, receiverAcc); // получаем, введеное число и введённый массив
+  inputTransferAmount.value = inputTransferTo.value = ``;
+
+  if (
+    amount > 0 && // Баланс больше 0
+    receiverAcc && // проверка существования акаунта, он должен существовать
+    currentAccount.balance >= amount && // Баланс больше или равен переводимой сумме
+    receiverAcc?.username !== currentAccount.username // проверка сеществует ли акаунт и запрещает перевод себе
+  ) {
+    currentAccount.movements.push(-amount); // вычитаем из баланса акаунта сумму перевода
+    receiverAcc.movements.push(amount); // Добовляем сумму перевода к балансу получателя
+    // Обновление ПИ(UI(пользовательского интерфейса))
+    updateUi(currentAccount);
+  } else {
+    console.log(`ERROR`);
   }
 });
