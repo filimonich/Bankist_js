@@ -63,16 +63,23 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 ////////////////////////////////////////////////////////////
 // 147 Creating DOM Elements
+///////////////////////////////////////////////////////////////////////
+// 163 Sorting Arrays // Сортировка массивов
 
 // показывать движение // получаем данные с которыми должно работать
 // параметр функции наз. движение
-const displayMovements = function (movements) {
+// В зависимости от параметра sort = false, функция будет упорядочивать движения, по умолч. будет false
+const displayMovements = function (movements, sort = false) {
   // Свойство интерфейса Element innerHTML устанавливает или получает HTML или XML разметку дочерних элементов.
   // опорожнить весь контейнер и только потом добовляем новые элементы
   // Возвращает всё включая HTML, все тэги
-  // containerMovements.innerHTML = ``; // устанавливаем его в пустую строку
+  containerMovements.innerHTML = ``; // устанавливаем его в пустую строку
+
+  // Если sort истинно тогда отображаем копию(slice) массива movements сортированный с пом. sort (в поряд. возраст.), если лоджно возврощаем стандартное положение
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
   // функция получает один массив движения, затем работает с этими данными
-  movements.forEach(function (mov, i) {
+  movs.forEach(function (mov, i) {
     // функция (mov, i) обратного вызова
     // Способ узнать дипозит или вывод средств при помощи троичного оператора
     const type = mov > 0 ? `deposit` : `withdrawal`;
@@ -85,7 +92,7 @@ const displayMovements = function (movements) {
       <div class="movements__value">${mov}€</div>
     </div>`;
     // insertAdjacentHTML() разбирает указанный текст как HTML или XML и вставляет полученные узлы (nodes) в DOM дерево в указанную позицию. Данная функция не переписывает имеющиеся элементы, что предотвращает дополнительную сериализацию и поэтому работает быстрее, чем манипуляции с innerHTML.
-    containerMovements.insertAdjacentHTML(`afterbegin`, html);
+    containerMovements.insertAdjacentHTML(`afterbegin`, html); // 'afterbegin': сразу после открывающего тега element (перед первым потомком).
     // создание html
   });
 };
@@ -246,4 +253,12 @@ btnClose.addEventListener(`click`, function (e) {
     containerApp.style.opacity = 0;
   }
   inputCloseUsername.value = inputClosePin.value = ``; // Удаление символов ставится после условий, иначе условия могут не выполниться
+});
+
+// Создаем переменную со стандартным значением отсортированного состояния , что бы она всегда могла вернутся к ниму
+let sorted = false;
+btnSort.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted); // !sorted = sorted = false // Логический оператор НЕ (!) (логическое отрицание) меняет логическое значение операнда с истины в ложь и наоборот
+  sorted = !sorted;
 });
