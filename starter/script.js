@@ -169,7 +169,7 @@ btnLogin.addEventListener(`click`, function (e) {
   console.log(currentAccount);
   // Проверка, пин currentAccount на соотвествие введенному пину из inputLoginUsername
   // ?. проверяет, существует ли currentAccount, далее pin будет прочитан, только если он существует
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
     // Отобразить пользовательский интерфейс и приветсвие
     labelWelcome.textContent = `Welcome back, ${
       currentAccount.owner.split(` `)[0]
@@ -192,7 +192,7 @@ btnLogin.addEventListener(`click`, function (e) {
 btnTransfer.addEventListener(`click`, function (e) {
   e.preventDefault();
   // Получаем число amount
-  const amount = Number(inputTransferAmount.value);
+  const amount = +inputTransferAmount.value;
   // Находим и проверяем полученные данные из inputTransferTo.value
   const receiverAcc = accounts.find(
     acc => acc.username === inputTransferTo.value
@@ -222,7 +222,7 @@ btnTransfer.addEventListener(`click`, function (e) {
 btnLoan.addEventListener(`click`, function (e) {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = +inputLoanAmount.value;
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Если это верно, добавить положительные movement к балансу и обновить интерфейс
     currentAccount.movements.push(amount);
@@ -240,7 +240,7 @@ btnClose.addEventListener(`click`, function (e) {
 
   if (
     inputCloseUsername.value === currentAccount.username &&
-    Number(inputClosePin.value) === currentAccount.pin
+    +inputClosePin.value === currentAccount.pin
   ) {
     const index = accounts.findIndex(
       acc => acc.username === currentAccount.username
